@@ -41,7 +41,7 @@ export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState();
   const [selectedOffer, setSelectedOffer] = useState(0);
 
-  const destination = route.params.destination;
+  const destination = route?.params?.destination;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -104,6 +104,16 @@ export default function HomeScreen() {
         { cancelable: true }
       );
     }
+
+    if (destination && selectedDate) {
+      navigation.navigate("Places", {
+        rooms,
+        adults,
+        children,
+        selectedDate,
+        place,
+      });
+    }
   };
 
   return (
@@ -129,11 +139,15 @@ export default function HomeScreen() {
           >
             <MagnifyingGlassIcon color={"black"} size={24} />
             <TextInput
-              placeholder={destination ? destination : "Enter Yu Destinations"}
+              placeholder={
+                destination ? destination : "Enter Your Destinations"
+              }
               placeholderTextColor={
                 destination ? themeColor.primaryColor : "gray"
               }
-              style={{ fontWeight: destination ? "bold" : "normal" }}
+              style={{
+                fontWeight: destination ? "bold" : "normal",
+              }}
             />
           </TouchableOpacity>
 
@@ -152,7 +166,13 @@ export default function HomeScreen() {
           >
             <CalendarDaysIcon color={"black"} size={24} />
             <DatePicker
-              style={{ width: "95%", height: 30, borderWidth: 0 }}
+              style={{
+                width: "95%",
+                height: 30,
+                borderWidth: 0,
+                alignItems: "flex-start",
+                marginLeft: 10,
+              }}
               customStyles={{
                 placeholderText: { fontSize: 14 },
                 headerStyle: {
@@ -187,10 +207,7 @@ export default function HomeScreen() {
             }}
           >
             <UserIcon color={"black"} size={24} />
-            <TextInput
-              placeholder={`${rooms} room + ${adults} adults + ${children} children`}
-              placeholderTextColor={themeColor.primaryColor}
-            />
+            <Text>{`${rooms} room + ${adults} adults + ${children} children`}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => searchPlaces(destination)}
