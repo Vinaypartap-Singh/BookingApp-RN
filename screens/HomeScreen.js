@@ -1,5 +1,7 @@
 import {
   Button,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +16,8 @@ import {
   MagnifyingGlassIcon,
   CalendarDaysIcon,
   UserIcon,
+  PlusIcon,
+  MinusIcon,
 } from "react-native-heroicons/outline";
 import Header from "../components/Header";
 import DatePicker from "react-native-date-ranges";
@@ -28,13 +32,12 @@ import {
 
 export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [rooms, setRooms] = useState("1");
-  const [adults, setAdults] = useState("2");
-  const [children, setChildren] = useState("0");
-
+  const [rooms, setRooms] = useState(1);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
   const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState();
-  console.log(selectedDate);
+  const [selectedOffer, setSelectedOffer] = useState(0);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -64,6 +67,19 @@ export default function HomeScreen() {
       />
     );
   };
+
+  const offers = [
+    {
+      id: 1,
+      title: "Guests",
+      description: "You are at genius level one in our loyalty program.",
+    },
+    {
+      id: 2,
+      title: "10% Discounts",
+      description: "Enjoy Discounts at participating worldwide events.",
+    },
+  ];
 
   return (
     <>
@@ -124,7 +140,7 @@ export default function HomeScreen() {
               }
               centerAlign
               allowFontScaling={false}
-              placeholder={"Apr 27, 2018 → Jul 10, 2018"}
+              placeholder={"Select You Dates"}
               mode={"range"}
             />
           </TouchableOpacity>
@@ -143,13 +159,79 @@ export default function HomeScreen() {
           >
             <UserIcon color={"black"} size={24} />
             <TextInput
-              placeholder="1 room + 2 adults + 0 children"
-              placeholderTextColor={"gray"}
+              placeholder={`${rooms} room + ${adults} adults + ${children} children`}
+              placeholderTextColor={themeColor.primaryColor}
+            />
+          </TouchableOpacity>
+          <View>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "600",
+                color: themeColor.primaryColor,
+              }}
+            >
+              Travel More Spend Less
+            </Text>
+
+            <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+              {offers.map((data, index) => {
+                const isActive = data.id == selectedOffer;
+
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setSelectedOffer(data.id)}
+                    style={{
+                      width: 250,
+                      backgroundColor: isActive
+                        ? themeColor.primaryColor
+                        : "white",
+                      marginRight: 20,
+                      marginVertical: 10,
+                      borderRadius: 10,
+                      paddingLeft: 20,
+                      paddingRight: 10,
+                      paddingVertical: 30,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: isActive ? "white" : "black",
+                        fontSize: 20,
+                        fontWeight: "500",
+                      }}
+                    >
+                      {data.title}
+                    </Text>
+                    <Text
+                      style={{
+                        color: isActive ? "white" : "black",
+                        fontSize: 14,
+                        fontWeight: "500",
+                        lineHeight: 20,
+                        marginTop: 10,
+                      }}
+                    >
+                      {data.description}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+          <TouchableOpacity style={{ alignItems: "center" }}>
+            <Image
+              source={{
+                uri: "https://assets.stickpng.com/thumbs/5a32a821cb9a85480a628f8f.png",
+              }}
+              style={{ width: 250, height: 50 }}
             />
           </TouchableOpacity>
         </View>
       </View>
 
+      {/* Bottom Modal View */}
       <BottomModal
         swipeThreshold={200}
         onBackdropPress={() => setModalVisible(!modalVisible)}
@@ -176,8 +258,119 @@ export default function HomeScreen() {
         onTouchOutside={() => setModalVisible(!modalVisible)}
       >
         <ModalContent style={{ width: "100%", height: 300 }}>
-          <View>
-            <Text>Rooms</Text>
+          <View
+            style={{
+              marginTop: 40,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 20 }}>Rooms</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 15,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setRooms(Math.max(1, rooms - 1))}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <MinusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+              <Text>{rooms}</Text>
+              <TouchableOpacity
+                onPress={() => setRooms((c) => c + 1)}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <PlusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View
+            style={{
+              marginTop: 40,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 20 }}>Adults</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 15,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setAdults(Math.max(1, rooms - 1))}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <MinusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+              <Text>{adults}</Text>
+              <TouchableOpacity
+                onPress={() => setAdults((c) => c + 1)}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <PlusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View
+            style={{
+              marginTop: 40,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 20 }}>Children</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 15,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setChildren(Math.max(0, children - 1))}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <MinusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+              <Text>{children}</Text>
+              <TouchableOpacity
+                onPress={() => setChildren((c) => c + 1)}
+                style={{
+                  backgroundColor: themeColor.primaryColor,
+                  padding: 5,
+                  borderRadius: 50,
+                }}
+              >
+                <PlusIcon color={"white"} size={16} />
+              </TouchableOpacity>
+            </View>
           </View>
         </ModalContent>
       </BottomModal>
