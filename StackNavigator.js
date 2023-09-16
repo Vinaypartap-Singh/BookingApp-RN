@@ -22,6 +22,7 @@ import BookingScreen from "./screens/BookingScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import { themeColor } from "./theme/theme";
 import SearchScreen from "./screens/SearchScreen";
+import PlaceScreen from "./screens/PlaceScreen";
 export default function StackNavigator() {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
@@ -99,6 +100,11 @@ export default function StackNavigator() {
         <Stack.Screen
           name="Search"
           component={SearchScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Places"
+          component={PlaceScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
