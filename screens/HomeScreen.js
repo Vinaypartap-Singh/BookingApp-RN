@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Image,
   ScrollView,
@@ -9,7 +10,7 @@ import {
   View,
 } from "react-native";
 import React, { useLayoutEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 import {
   BellIcon,
@@ -31,13 +32,17 @@ import {
 } from "react-native-modals";
 
 export default function HomeScreen() {
+  const route = useRoute();
+  const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [rooms, setRooms] = useState(1);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
-  const navigation = useNavigation();
   const [selectedDate, setSelectedDate] = useState();
   const [selectedOffer, setSelectedOffer] = useState(0);
+
+  const destination = route.params.destination;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -81,6 +86,26 @@ export default function HomeScreen() {
     },
   ];
 
+  const searchPlaces = (place) => {
+    if (!destination || !selectedDate) {
+      Alert.alert(
+        "Invalid Details",
+        "Please enter all the details",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Ok",
+            style: "default",
+          },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
+
   return (
     <>
       <View>
@@ -91,6 +116,7 @@ export default function HomeScreen() {
           {/* Destination */}
 
           <TouchableOpacity
+            onPress={() => navigation.navigate("Search")}
             style={{
               borderWidth: 1,
               paddingVertical: 20,
@@ -103,8 +129,11 @@ export default function HomeScreen() {
           >
             <MagnifyingGlassIcon color={"black"} size={24} />
             <TextInput
-              placeholder="Enter Your Destination"
-              placeholderTextColor={"gray"}
+              placeholder={destination ? destination : "Enter Yu Destinations"}
+              placeholderTextColor={
+                destination ? themeColor.primaryColor : "gray"
+              }
+              style={{ fontWeight: destination ? "bold" : "normal" }}
             />
           </TouchableOpacity>
 
@@ -163,7 +192,26 @@ export default function HomeScreen() {
               placeholderTextColor={themeColor.primaryColor}
             />
           </TouchableOpacity>
-          <View>
+          <TouchableOpacity
+            onPress={() => searchPlaces(destination)}
+            style={{
+              borderWidth: 1,
+              paddingVertical: 20,
+              paddingHorizontal: 20,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 10,
+              gap: 10,
+              backgroundColor: themeColor.primaryColor,
+            }}
+          >
+            <MagnifyingGlassIcon color={"white"} size={20} />
+            <Text style={{ fontWeight: "500", color: "white", fontSize: 16 }}>
+              Search Now
+            </Text>
+          </TouchableOpacity>
+          <View style={{ marginTop: 5 }}>
             <Text
               style={{
                 fontSize: 22,
@@ -174,7 +222,11 @@ export default function HomeScreen() {
               Travel More Spend Less
             </Text>
 
-            <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal
+              style={{ marginTop: 10 }}
+            >
               {offers.map((data, index) => {
                 const isActive = data.id == selectedOffer;
 
