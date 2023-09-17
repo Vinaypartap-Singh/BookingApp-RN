@@ -25,6 +25,7 @@ import SearchScreen from "./screens/SearchScreen";
 import PlaceScreen from "./screens/PlaceScreen";
 import MapScreen from "./screens/MapScreen";
 import PropertyInfo from "./screens/PropertyInfo";
+import RoomsScreen from "./screens/RoomsScreen";
 export default function StackNavigator() {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
@@ -117,6 +118,11 @@ export default function StackNavigator() {
         <Stack.Screen
           name="PropertyInfo"
           component={PropertyInfo}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Rooms"
+          component={RoomsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
