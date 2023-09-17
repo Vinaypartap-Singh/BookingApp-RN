@@ -3,6 +3,7 @@ import React from "react";
 import { HeartIcon } from "react-native-heroicons/outline";
 import { themeColor } from "../theme/theme";
 import { StarIcon } from "react-native-heroicons/solid";
+import { useNavigation } from "@react-navigation/native";
 
 export default function PropertyCard({
   adults,
@@ -13,10 +14,25 @@ export default function PropertyCard({
   property,
   availableRooms,
 }) {
+  const navigation = useNavigation();
+  console.log(adults);
   return (
     <>
       <View style={{ marginVertical: 20, paddingHorizontal: 20 }}>
         <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("PropertyInfo", {
+              name: property.name,
+              rating: property.rating,
+              oldPrice: property.oldPrice,
+              newPrice: property.newPrice,
+              photos: property.photos,
+              adults: adults,
+              children: children,
+              rooms: rooms,
+              selectedDates: selectedDate,
+            })
+          }
           style={{
             backgroundColor: "white",
             borderRadius: 10,
