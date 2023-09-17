@@ -1,15 +1,34 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useLayoutEffect } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 import {
   AdjustmentsHorizontalIcon,
   ChartBarIcon,
   MapIcon,
+  MinusIcon,
+  PlusIcon,
 } from "react-native-heroicons/outline";
 import PropertyCard from "../components/PropertyCard";
+import {
+  BottomModal,
+  ModalButton,
+  ModalContent,
+  ModalFooter,
+  ModalTitle,
+  SlideAnimation,
+} from "react-native-modals";
 
 export default function PlaceScreen() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("Low to High");
+  console.log(selectedFilter);
   const navigation = useNavigation();
   const route = useRoute();
   const propertyInfo = route?.params;
@@ -27,6 +46,15 @@ export default function PlaceScreen() {
       },
     });
   }, []);
+
+  const filters = [
+    {
+      filter: "Low To High",
+    },
+    {
+      filter: "High To Low",
+    },
+  ];
 
   const data = [
     {
@@ -490,6 +518,55 @@ export default function PlaceScreen() {
     },
   ];
 
+  const searchPlaces = data?.filter(
+    (item) => item.place === propertyInfo.place
+  );
+
+  const [sortedData, setSortedData] = useState(data);
+  const compare = (a, b) => {
+    if (a.newPrice > b.newPrice) {
+      return -1;
+    }
+    if (a.newPrice < b.newPrice) {
+      return 1;
+    }
+    return 0;
+  };
+
+  const comparision = (a, b) => {
+    if (a.newPrice < b.newPrice) {
+      return -1;
+    }
+    if (a.newPrice > b.newPrice) {
+      return 1;
+    }
+    return 0;
+  };
+
+  const applyFilter = (filter) => {
+    setModalVisible(false);
+    let sortedProperties;
+    switch (filter) {
+      case "High to Low":
+        sortedProperties = [...searchPlaces];
+        sortedProperties.forEach((place) => {
+          place.properties.sort(compare);
+        });
+        setSortedData(sortedProperties);
+        break;
+      case "Low To High":
+        sortedProperties = [...searchPlaces];
+        sortedProperties.forEach((place) => {
+          place.properties.sort(comparision);
+        });
+        setSortedData(sortedProperties);
+        break;
+      default:
+        setSortedData(searchPlaces); // Reset to original order
+        break;
+    }
+  };
+
   return (
     <View>
       <View
@@ -502,21 +579,31 @@ export default function PlaceScreen() {
           paddingVertical: 10,
         }}
       >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(!modalVisible)}
+          style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        >
           <AdjustmentsHorizontalIcon size={30} color={"black"} />
           <Text style={{ fontSize: 16, fontWeight: 500 }}>Sort</Text>
-        </View>
+        </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <ChartBarIcon size={25} color={"black"} />
           <Text style={{ fontSize: 16, fontWeight: 500 }}>Filter</Text>
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("Map", {
+              searchPlaces: searchPlaces,
+            })
+          }
+          style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        >
           <MapIcon size={25} color={"black"} />
           <Text style={{ fontSize: 16, fontWeight: 500 }}>Map</Text>
-        </View>
+        </TouchableOpacity>
       </View>
       <ScrollView style={{ backgroundColor: "#f5f5f5" }}>
-        {data
+        {sortedData
           ?.filter((item) => item.place === route.params.place)
           ?.map((item) =>
             item.properties.map((property, index) => {
@@ -535,6 +622,72 @@ export default function PlaceScreen() {
             })
           )}
       </ScrollView>
+
+      <BottomModal
+        swipeThreshold={200}
+        onBackdropPress={() => setModalVisible(!modalVisible)}
+        swipeDirection={["up", "down"]}
+        footer={
+          <ModalFooter>
+            <ModalButton
+              text="Apply"
+              onPress={() => applyFilter(selectedFilter)}
+              style={{
+                backgroundColor: themeColor.primaryColor,
+              }}
+              textStyle={{ color: "white" }}
+            />
+          </ModalFooter>
+        }
+        modalTitle={<ModalTitle title="Select rooms and guests" />}
+        modalAnimation={
+          new SlideAnimation({
+            slideFrom: "bottom",
+          })
+        }
+        visible={modalVisible}
+        onTouchOutside={() => setModalVisible(!modalVisible)}
+      >
+        <ModalContent style={{ width: "100%", height: 300 }}>
+          <View
+            style={{
+              marginTop: 40,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontWeight: "600", fontSize: 20 }}>Sort</Text>
+            <View style={{ gap: 10 }}>
+              {filters.map((data, index) => {
+                const isSelected = selectedFilter === data.filter;
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedFilter(data.filter);
+                    }}
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 15,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: isSelected ? "bold" : "normal",
+                        fontSize: isSelected ? 18 : 16,
+                        color: isSelected ? themeColor.primaryColor : "gray",
+                      }}
+                    >
+                      {data.filter}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </ModalContent>
+      </BottomModal>
     </View>
   );
 }
