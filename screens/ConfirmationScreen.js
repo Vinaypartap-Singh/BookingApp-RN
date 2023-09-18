@@ -3,13 +3,14 @@ import React, { useLayoutEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 import { StarIcon } from "react-native-heroicons/outline";
+import { useDispatch } from "react-redux";
+import { savedPlaces } from "../store/bookingSlice";
 
 export default function ConfirmationScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const data = route?.params;
   const hotelInfo = data.data;
-  console.log(hotelInfo);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,6 +25,13 @@ export default function ConfirmationScreen() {
       },
     });
   }, []);
+
+  const dispatch = useDispatch();
+
+  const confirmBooking = () => {
+    dispatch(savedPlaces(hotelInfo));
+    navigation.navigate("Main");
+  };
 
   return (
     <View style={{ padding: 10 }}>
@@ -139,6 +147,7 @@ export default function ConfirmationScreen() {
 
         <View style={{ alignItems: "start" }}>
           <TouchableOpacity
+            onPress={confirmBooking}
             style={{
               marginTop: 15,
               backgroundColor: themeColor.primaryColor,
