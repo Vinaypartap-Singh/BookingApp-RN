@@ -31,6 +31,7 @@ export default function PropertyCard({
               children: children,
               rooms: rooms,
               selectedDates: selectedDate,
+              availableRooms: availableRooms,
             })
           }
           style={{
