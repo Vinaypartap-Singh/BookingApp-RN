@@ -145,6 +145,18 @@ export default function RoomsScreen() {
 
       {roomInfo ? (
         <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("User", {
+              oldPrice: roomsInfo.oldPrice,
+              newPrice: roomsInfo.newPrice,
+              name: roomsInfo.name,
+              children: roomsInfo.children,
+              adults: roomsInfo.adults,
+              rating: roomsInfo.rating,
+              startDate: roomsInfo.startDate,
+              endDate: roomsInfo.endDate,
+            })
+          }
           style={{
             backgroundColor: themeColor.primaryColor,
             paddingVertical: 20,
