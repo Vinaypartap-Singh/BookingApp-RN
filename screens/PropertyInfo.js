@@ -11,12 +11,13 @@ import React, { useLayoutEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 import { StarIcon } from "react-native-heroicons/outline";
+import HotelServices from "../components/HotelServices";
 
 export default function PropertyInfo() {
   const navigation = useNavigation();
   const route = useRoute();
   const propertyInfo = route?.params;
-  //   console.log("Property Info ", propertyInfo);
+  console.log(propertyInfo.selectedDates);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -242,6 +243,45 @@ export default function PropertyInfo() {
               </Text>
             </View>
           </View>
+        </View>
+
+        <View
+          style={{
+            borderTopWidth: 4,
+            marginTop: 20,
+            borderTopColor: "#dedede",
+          }}
+        >
+          <View style={{ flexDirection: "row", gap: 30, marginTop: 20 }}>
+            <HotelServices />
+          </View>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("Rooms", {
+                rooms: propertyInfo.availableRooms,
+                oldPrice: propertyInfo.oldPrice,
+                newPrice: propertyInfo.newPrice,
+                name: propertyInfo.name,
+                children: propertyInfo.children,
+                adults: propertyInfo.adults,
+                rating: propertyInfo.rating,
+                startDate: propertyInfo.selectedDates.startDate,
+                endDate: propertyInfo.selectedDates.endDate,
+              })
+            }
+            style={{
+              marginTop: 20,
+              backgroundColor: themeColor.hotelCheckInOutText,
+              paddingVertical: 18,
+              borderRadius: 10,
+            }}
+          >
+            <Text
+              style={{ textAlign: "center", color: "white", fontWeight: 600 }}
+            >
+              Select Availability
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
