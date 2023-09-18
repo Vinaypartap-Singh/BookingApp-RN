@@ -1,11 +1,12 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 
@@ -13,7 +14,11 @@ export default function UserScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const data = route?.params;
-  console.log(data);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -27,6 +32,34 @@ export default function UserScreen() {
       },
     });
   }, []);
+
+  const confirmBooking = () => {
+    if (firstName === "" || lastName === "" || email === "" || phoneNo === "") {
+      Alert.alert(
+        "Invaild Details",
+        "Please fill all the details",
+        [
+          {
+            text: "Ok",
+            style: "default",
+          },
+          {
+            text: "cancel",
+            style: "cancel",
+          },
+        ],
+        { cancelable: true }
+      );
+    } else {
+      navigation.navigate("Confirmation", {
+        data: data,
+        firstName,
+        lastName,
+        email,
+        phoneNo,
+      });
+    }
+  };
   return (
     <View style={{ padding: 30 }}>
       <View style={{ gap: 30 }}>
@@ -38,7 +71,11 @@ export default function UserScreen() {
             borderRadius: 10,
           }}
         >
-          <TextInput placeholder="First Name" autoCorrect={false} />
+          <TextInput
+            placeholder="First Name"
+            onChangeText={(text) => setFirstName(text)}
+            autoCorrect={false}
+          />
         </View>
         <View
           style={{
@@ -48,7 +85,11 @@ export default function UserScreen() {
             borderRadius: 10,
           }}
         >
-          <TextInput placeholder="Last Name" autoCorrect={false} />
+          <TextInput
+            placeholder="Last Name"
+            onChangeText={(text) => setLastName(text)}
+            autoCorrect={false}
+          />
         </View>
         <View
           style={{
@@ -58,7 +99,12 @@ export default function UserScreen() {
             borderRadius: 10,
           }}
         >
-          <TextInput placeholder="Email" autoCorrect={false} />
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            autoCorrect={false}
+            onChangeText={(text) => setEmail(text)}
+          />
         </View>
         <View
           style={{
@@ -68,7 +114,11 @@ export default function UserScreen() {
             borderRadius: 10,
           }}
         >
-          <TextInput placeholder="Phone No" autoCorrect={false} />
+          <TextInput
+            placeholder="Phone No"
+            onChangeText={(text) => setPhoneNo(text)}
+            autoCorrect={false}
+          />
         </View>
       </View>
 
@@ -112,6 +162,7 @@ export default function UserScreen() {
           </View>
           <View>
             <TouchableOpacity
+              onPress={confirmBooking}
               style={{
                 backgroundColor: themeColor.hotelCheckInOutText,
                 paddingVertical: 15,
