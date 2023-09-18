@@ -28,6 +28,8 @@ import PropertyInfo from "./screens/PropertyInfo";
 import RoomsScreen from "./screens/RoomsScreen";
 import UserScreen from "./screens/UserScreen";
 import ConfirmationScreen from "./screens/ConfirmationScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 export default function StackNavigator() {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
@@ -96,7 +98,17 @@ export default function StackNavigator() {
   }
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Main"
           component={BottomTabs}

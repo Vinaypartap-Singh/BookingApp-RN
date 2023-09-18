@@ -1,4 +1,10 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useLayoutEffect } from "react";
 import { themeColor } from "../theme/theme";
 import { useNavigation } from "@react-navigation/native";
@@ -156,7 +162,27 @@ export default function BookingScreen() {
             );
           })}
         </View>
-      ) : null}
+      ) : (
+        <View style={{ marginTop: 300 }}>
+          <Text style={{ fontWeight: 700, fontSize: 20, textAlign: "center" }}>
+            No Bookings
+          </Text>
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Home")}
+              style={{
+                marginTop: 15,
+                backgroundColor: themeColor.primaryColor,
+                paddingHorizontal: 20,
+                paddingVertical: 14,
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: 600 }}>Book Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
