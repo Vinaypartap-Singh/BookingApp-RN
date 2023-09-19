@@ -14,6 +14,7 @@ import { StarIcon } from "react-native-heroicons/outline";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { StatusBar } from "expo-status-bar";
 
 export default function BookingScreen() {
   const bookings = useSelector((state) => state.bookings.bookings);
@@ -53,6 +54,7 @@ export default function BookingScreen() {
     <View style={{ padding: 20 }}>
       {Object.keys(bookingItems).length > 0 ? (
         <ScrollView>
+          <StatusBar style="light" />
           <Text style={{ fontSize: 18, fontWeight: "bold" }}>
             Your Bookings
           </Text>
@@ -68,6 +70,7 @@ export default function BookingScreen() {
                   marginTop: 20,
                 }}
               >
+                <StatusBar style="light" />
                 <View
                   style={{
                     flexDirection: "row",

@@ -51,7 +51,7 @@ export default function StackNavigator() {
               ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="SavedScreen"
           component={SavedScreen}
           options={{
@@ -64,7 +64,7 @@ export default function StackNavigator() {
                 <HeartIcon />
               ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Bookings"
           component={BookingScreen}

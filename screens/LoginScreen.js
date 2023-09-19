@@ -86,11 +86,12 @@ export default function LoginScreen() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
+          <StatusBar style="dark" />
           <ActivityIndicator size={"large"} color={themeColor.primaryColor} />
         </View>
       ) : (
         <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <View>
             <Text
               style={{
