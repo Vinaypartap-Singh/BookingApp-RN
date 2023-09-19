@@ -1,16 +1,19 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { themeColor } from "../theme/theme";
 import { StarIcon } from "react-native-heroicons/outline";
 import { useDispatch } from "react-redux";
 import { savedPlaces } from "../store/bookingSlice";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 export default function ConfirmationScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const data = route?.params;
-  const hotelInfo = data.data;
+  console.log(data);
+  const hotelInfo = data?.data;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -27,10 +30,35 @@ export default function ConfirmationScreen() {
   }, []);
 
   const dispatch = useDispatch();
+  const uid = auth.currentUser.uid;
 
-  const confirmBooking = () => {
-    dispatch(savedPlaces(hotelInfo));
+  const confirmBooking = async () => {
+    dispatch(savedPlaces(data));
+    await setDoc(
+      doc(db, "users", `${uid}`),
+      {
+        bookingDetails: { ...data },
+      },
+      {
+        merge: true,
+      }
+    );
     navigation.navigate("Main");
+    Alert.alert(
+      "Booking Confirmed",
+      "Your booking has been confirmed",
+      [
+        {
+          text: "Ok",
+          style: "default",
+        },
+        {
+          text: "Cancel",
+          style: "default",
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
