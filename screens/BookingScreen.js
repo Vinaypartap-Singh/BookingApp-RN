@@ -1,5 +1,6 @@
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,10 +11,28 @@ import { themeColor } from "../theme/theme";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { StarIcon } from "react-native-heroicons/outline";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 
 export default function BookingScreen() {
   const bookings = useSelector((state) => state.bookings.bookings);
-  console.log(bookings);
+  const [bookingItems, setBookingItems] = useState([]);
+  const uid = auth.currentUser.uid;
+
+  useEffect(() => {
+    const getData = async () => {
+      const docRef = doc(db, "users", `${uid}`);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const bookingData = docSnap.data().bookingDetails;
+        setBookingItems(bookingData);
+      }
+    };
+
+    getData();
+  }, []);
 
   const navigation = useNavigation();
   useLayoutEffect(() => {
@@ -29,13 +48,17 @@ export default function BookingScreen() {
       },
     });
   }, []);
+
   return (
     <View style={{ padding: 20 }}>
-      {bookings.length > 0 ? (
-        <View>
-          <Text style={{ fontSize: 18, fontWeight: 700 }}>Your Bookings</Text>
-          {bookings.map((hotelInfo, index) => {
-            return (
+      {Object.keys(bookingItems).length > 0 ? (
+        <ScrollView>
+          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+            Your Bookings
+          </Text>
+          {Object.keys(bookingItems).map((key, index) => {
+            const data = bookingItems[key];
+            return data.name ? (
               <View
                 key={index}
                 style={{
@@ -56,7 +79,7 @@ export default function BookingScreen() {
                     <Text
                       style={{ fontSize: 18, width: 210, fontWeight: "bold" }}
                     >
-                      {hotelInfo.name}
+                      {data.name}
                     </Text>
                     <View
                       style={{
@@ -76,7 +99,7 @@ export default function BookingScreen() {
                         <StarIcon color={"white"} size={18} />
                       </View>
                       <Text style={{ fontWeight: 600, marginTop: 9 }}>
-                        {hotelInfo.rating}
+                        {data.rating}
                       </Text>
                       <View
                         style={{
@@ -119,7 +142,7 @@ export default function BookingScreen() {
                     <Text
                       style={{ fontWeight: 500, marginTop: 4, fontSize: 16 }}
                     >
-                      {hotelInfo.startDate}
+                      {data.startDate}
                     </Text>
                   </View>
                   <View>
@@ -135,7 +158,7 @@ export default function BookingScreen() {
                     <Text
                       style={{ fontWeight: 500, marginTop: 4, fontSize: 16 }}
                     >
-                      {hotelInfo.endDate}
+                      {data.endDate}
                     </Text>
                   </View>
                 </View>
@@ -153,15 +176,14 @@ export default function BookingScreen() {
                         marginTop: 4,
                       }}
                     >
-                      Rooms {hotelInfo.adults} adults {hotelInfo.children}{" "}
-                      children
+                      Rooms {data.adults} adults {data.children} children
                     </Text>
                   </View>
                 </View>
               </View>
-            );
+            ) : null;
           })}
-        </View>
+        </ScrollView>
       ) : (
         <View style={{ marginTop: 300 }}>
           <Text style={{ fontWeight: 700, fontSize: 20, textAlign: "center" }}>
