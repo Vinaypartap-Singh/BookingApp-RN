@@ -1,4 +1,5 @@
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -10,12 +11,68 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { themeColor } from "../theme/theme";
 import { useNavigation } from "@react-navigation/native";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  let today = new Date();
+  var date =
+    today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate();
+  var time =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+  const registerAccount = () => {
+    if (email === "" || password === "" || username === "") {
+      Alert.alert(
+        "Invalid Details",
+        "Please fill all the details to continute",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancelled"),
+            style: "cancel",
+          },
+          {
+            text: "Ok",
+            onPress: () => console.log("Ok"),
+            style: "destructive",
+          },
+        ]
+      );
+    } else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          const uid = user.uid;
+          setDoc(doc(db, "users", `${uid}`), {
+            username: username,
+            email: email,
+            createdAt: date + " " + time,
+          });
+          Alert.alert(
+            "Success",
+            "Your account has been created successfully. Login to continute",
+            [
+              {
+                text: "Ok",
+                style: "cancel",
+              },
+            ]
+          );
+          navigation.navigate("Login");
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          Alert.alert("Error", errorMessage);
+          console.log(errorMessage);
+        });
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
@@ -56,6 +113,7 @@ export default function RegisterScreen() {
         >
           <TextInput
             placeholder="Username"
+            autoCorrect={false}
             onChangeText={(text) => setUsername(text)}
           />
         </View>
@@ -98,6 +156,7 @@ export default function RegisterScreen() {
 
       <View style={{ alignItems: "center" }}>
         <TouchableOpacity
+          onPress={registerAccount}
           disabled={password.length < 8 && email === "" && username === ""}
           style={{
             backgroundColor: themeColor.primaryColor,
